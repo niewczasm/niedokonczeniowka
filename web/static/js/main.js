@@ -1,0 +1,281 @@
+window.onload = (event) => {
+    if(localStorage.getItem("niedodata") == null) {
+        let startingEls = [
+            {"name": "Woda","emoji": "💧"},
+            {"name": "Ogień","emoji": "🔥"},
+            {"name": "Wiatr","emoji": "💨"},
+            {"name": "Ziemia","emoji": "🌍"}
+        ]
+        for (let i = 0; i < startingEls.length; i++) {
+            startingEls[i] = JSON.stringify(startingEls[i])
+        }
+        localStorage.setItem("niedodata", JSON.stringify(startingEls))
+    }
+    let elements = JSON.parse(localStorage.getItem("niedodata"))
+    document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"
+    prepareSidebar(elements, true)
+    document.getElementById("searchfield").addEventListener("input", searchList)
+}
+
+
+
+function searchList(val) {
+    
+    let elements = JSON.parse(localStorage.getItem("niedodata"))
+    let searchVal = val.target.value
+    console.log("input: " + searchVal + " ")
+    let isempty = val.target.value == ""
+    console.log("isempty " + isempty)
+    if(val.target.value == ""){
+        prepareSidebar(elements, true)
+    }
+    else {
+        let filteredArr = []
+        elements.forEach(el => {
+            item = JSON.parse(el)
+            if(item.name.toLowerCase().includes(searchVal.toLowerCase())){
+                filteredArr.push(item)
+            }
+        })
+        filteredArr.sort(compareFn)
+        prepareSidebar(filteredArr)
+    }
+}
+
+function prepareSidebar(arr, parseArr=false){
+    let btns = document.getElementById("sidebar").getElementsByTagName("button")
+    console.log(btns.length)
+    if(btns.length > 0){
+        for (let i = btns.length-1; i >= 0; i--){
+            btns[i].remove()
+        }
+    }
+    for (let i = 0; i < arr.length; i++) {
+        let item = {}
+        if(parseArr){
+            item = JSON.parse(arr[i])
+        }
+        else {
+            item = arr[i]
+        }
+        const node = document.createElement("button")
+        node.classList.add("listel")
+        node.innerText = item.emoji + " " + item.name
+        document.getElementById("sidebar").appendChild(node)
+    }
+}
+
+function compareFn(a,b) {
+    if (a.name < b.name) {
+        return -1
+    } else if (a.name > b.name) {
+        return 1
+    }
+    return 0
+}
+
+interact('#sidebar').dropzone({
+    accept: '.draggable',
+    overlap: 0.5,
+    ondrop: function (event) {
+        event.relatedTarget.remove()
+    }
+})
+
+interact('body')
+.on('move', function(event){
+    var target = document.getElementById("empty")
+    const size = target.getBoundingClientRect()
+    // keep the dragged position in the data-x/data-y attributes
+    var x = event.clientX - size.width/2
+    var y = event.clientY - size.height/2
+
+    // translate the element
+    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x)
+    target.setAttribute('data-y', y)
+})
+.on('up', function(event){
+    var target = document.getElementById("empty")
+    var elements = document.getElementById("elements")
+    const mainContent = document.getElementById('main-content');
+    const mainContentDims = mainContent.getClientRects()
+    if (target.childNodes.length != 0){
+        var child = target.childNodes[0]
+        var el = document.elementsFromPoint(event.clientX, event.clientY)
+        if (event.clientX <= mainContentDims.item(0).left){
+            child.remove()
+        }
+        else{
+            const size = child.getBoundingClientRect()
+            const x = parseFloat(target.dataset.x) - size.width/2
+            const y = parseFloat(target.dataset.y) - size.height/2
+            child.setAttribute('data-x', x)
+            child.setAttribute('data-y', y)
+            child.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+            child.style.whiteSpace = ""
+            elements.appendChild(child)
+            elements.appendChild(document.getElementById("empty"))
+            if(el[0].nodeName == "BUTTON" && el[1].nodeName == "BUTTON"){
+                generateNew(child,el[1])
+            }
+        }
+    }
+})
+
+function generateNew(firstTarget, secondTarget){
+    if (secondTarget.disabled == false && firstTarget.disabled == false){
+        firstTarget.disabled = true;
+        secondTarget.disabled = true;
+
+        const first = firstTarget.textContent
+        const firstnoemoji = first.substr(first.indexOf(" ") + 1)
+        const second = secondTarget.textContent
+        const secondnoemoji = second.substr(second.indexOf(" ") + 1)
+        fetch("generate?" + new URLSearchParams({
+            first: firstnoemoji,
+            second: secondnoemoji
+        }), {method: "GET"})
+            .then((response) => response.json())
+            .then((json) => {
+                let isNew = false
+                let elements = JSON.parse(localStorage.getItem("niedodata"))
+                if (json.discovered == true) {
+                    isNew = true
+                }
+                else {
+                    let found = false
+                    for (let i = 0; i < elements.length; i++) {
+                        item = JSON.parse(elements[i])
+                        if(json.name == item.name){
+                            found = true
+                            break
+                        }
+                    }
+                    isNew = !found
+                }
+                if (isNew){
+                    elements.push(JSON.stringify({name:json.name, emoji:json.emoji}))
+                    localStorage.setItem("niedodata", JSON.stringify(elements))
+                    const node = document.createElement("button")
+                    node.classList.add("listel")
+                    node.innerText = json.emoji + " " + json.name
+                    document.getElementById("sidebar").appendChild(node)
+                    document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"
+                }
+                firstTarget.innerText = json.emoji + " " + json.name
+                firstTarget.disabled = false
+                secondTarget.remove()
+                }
+            )
+    }
+}
+
+interact('.draggable')
+.dropzone({
+    accept: [".draggable"],
+    overlap: 0.2,
+    ondrop: function(event) {
+        generateNew(event.currentTarget, event.relatedTarget)
+    }
+
+})
+.on('doubletap', function(event){
+    const clone = event.currentTarget.cloneNode(true);
+    const size = event.currentTarget.getBoundingClientRect()
+    const elements = document.getElementById('elements');
+    clone.style.position = 'absolute';
+    const offset = randXY()
+    const x =  size.left + offset.x
+    const y =  size.top + offset.y
+
+
+    clone.style.left = `${x}px`;
+    clone.style.top = `${y}px`;
+    elements.appendChild(clone);
+})
+.draggable({
+    inertia: false,
+    autoScroll: false,
+    listeners: {
+        move: dragMoveListener,
+    },
+    modifiers: [
+        interact.modifiers.restrict({
+            restriction: document.body
+        })
+    ]
+})
+
+function randXY(max = 10, min = 0){
+    let obj = {};
+    let randx = Math.random()*(max-min) + min;
+    let randy = Math.random()*(max-min) + min;
+    let xsign = Math.floor(Math.random()*2);
+    let ysign = Math.floor(Math.random()*2);
+    if (xsign == 0) { xsign = -1 }
+    if (ysign == 0) { ysign = -1 }
+    obj.x = randx * xsign;
+    obj.y = randy * ysign;
+    return obj
+}
+
+function dragMoveListener (event) {
+    var target = event.target
+    // const mainContent = document.getElementById('main-content');
+    const mainContent = document.getElementById('elements');
+    mainContent.appendChild(target)
+    // keep the dragged position in the data-x/data-y attributes
+    var x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx
+    var y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy
+
+    // translate the element
+    target.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x)
+    target.setAttribute('data-y', y)
+}
+
+
+interact('#sidebar>.listel')
+.on('tap', function(event) {
+    const clone = event.currentTarget.cloneNode(true);
+    const mainContent = document.getElementById('main-content');
+    const mainContentDims = mainContent.getClientRects()
+    const elements = document.getElementById('elements');
+    // clone.classList.remove('listel');
+    clone.classList.add('draggable');
+    clone.style.position = 'absolute';
+    clone.style.left = `${event.clientX + mainContentDims.item(0).left}px`;
+    clone.style.top = `${event.clientY}px`;
+    elements.appendChild(clone);
+})
+.on('hold', function(event){
+    const clone = event.currentTarget.cloneNode(true);
+    const empty = document.getElementById("empty")
+    // clone.classList.remove('listel');
+    clone.classList.add('draggable');
+
+    clone.style.whiteSpace = "pre"
+
+    empty.appendChild(clone)
+
+    // var target = document.getElementById("empty")
+    const size = event.currentTarget.getBoundingClientRect()
+    // // keep the dragged position in the data-x/data-y attributes
+    var x = size.width/-2
+    var y = size.height/-2
+
+    // // translate the element
+    clone.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+
+    // // update the posiion attributes
+    clone.setAttribute('data-x', x)
+    clone.setAttribute('data-y', y)
+})
+.pointerEvents({
+    holdDuration: 70
+});
