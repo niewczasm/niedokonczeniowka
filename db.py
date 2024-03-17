@@ -4,9 +4,11 @@ import json
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
 
+logging.basicConfig(filename='logs.log', level=logging.DEBUG)
 app = Flask(__name__,
             static_url_path='',
             static_folder="web/static",
@@ -14,20 +16,20 @@ app = Flask(__name__,
 
 def  get_db():
     client = MongoClient(os.getenv("MONGODB_CS_test"))
-    return client[os.getenv("MONGODB_DB_TEST")]
+    return client[os.getenv("MONGODB_DB_test")]
 
 dbname = get_db()
-collection_name = dbname[os.getenv("MONGODB_CL_TEST")]
+collection_name = dbname[os.getenv("MONGODB_CL_test")]
 
 def askChatGPT(first, second):
     client = OpenAI()
     completion = client.chat.completions.create(
         # model="gpt-3.5-turbo",
         model="gpt-4-turbo-preview",
-        temperature=0.7,
-        top_p=0.8,
+        temperature=1,
+        top_p=1,
         messages=[
-            {"role": "system", "content": "Jesteś w stanie przyjąć dwa hasła i na ich podstawie utworzyć nowe, powiązane z obydwoma. Może to być dowolny rzeczownik lub czasownik, znana osoba, postać fikcyjna, liczebnik, cokolwiek ma logiczny związek. Odpowiadasz zawsze bez tłumaczenia i dodajesz do tego jedną emotikonkę odpowiadającą danemu wynikowi. Nie twórz słów o ile nie jest to konieczne i zwracaj wyniki możliwie po polsku"},
+            {"role": "system", "content": "Jesteś w stanie przyjąć dwa hasła i na ich podstawie utworzyć nowe, powiązane z obydwoma. Może to być dowolny rzeczownik, znana osoba, postać fikcyjna, cokolwiek ma logiczny związek. Odpowiadasz zawsze nowym hasłem i dodajesz do tego tylko jedno emoji odpowiadające danemu wynikowi. Nie twórz słów o ile nie jest to konieczne i zwracaj wyniki po polsku, liczebniki zamieniaj na liczby. Jeżeli obydwa hasła są takie same postaraj się nie zwracać tej samej wartości."},
             {"role": "user", "content": f"{first} + {second}"}
         ],
         functions= [{
@@ -90,29 +92,28 @@ def lookForNewObj(newObj, arr):
         }
 
 if __name__ == '__main__':
-    print("h3h3")
-    # i1 = {
-    #     "name": "woda",
-    #     "emoji": "💧",
-    #     "combinations": []
-    # }
-    # i2 = {
-    #     "name": "ogień",
-    #     "emoji": "🔥",
-    #     "combinations": []
-    # }
-    # i3 = {
-    #     "name": "wiatr",
-    #     "emoji": "💨",
-    #     "combinations": []
-    # }
-    # i4 = {
-    #     "name": "ziemia",
-    #     "emoji": "🌍",
-    #     "combinations": []
-    # }
-    # collection_name.insert_many([i1,i2,i3,i4])
-    
+    i1 = {
+        "name": "Woda",
+        "emoji": "💧",
+        "combinations": []
+    }
+    i2 = {
+        "name": "Ogień",
+        "emoji": "🔥",
+        "combinations": []
+    }
+    i3 = {
+        "name": "Wiatr",
+        "emoji": "💨",
+        "combinations": []
+    }
+    i4 = {
+        "name": "Ziemia",
+        "emoji": "🌍",
+        "combinations": []
+    }
+    collection_name.insert_many([i1,i2,i3,i4])    
+
 @app.route("/generate")
 def hello_world():
     first = request.args.get('first')
@@ -121,7 +122,13 @@ def hello_world():
     if result is not None:
         return result
     else:
-        newObj = askChatGPT(first,second)
+        newObj = {}
+        firstTime = True
+        while 'name' not in newObj or 'emoji' not in newObj:
+            if not firstTime:
+                app.logger.critical(newObj)        
+            newObj = askChatGPT(first,second)
+            firstTime = False
         return lookForNewObj(newObj,[first,second])
     
 @app.route("/")
