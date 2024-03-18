@@ -211,6 +211,9 @@ interact('.draggable')
     clone.style.top = `${y}px`;
     elements.appendChild(clone);
 })
+.on('tap', function(event){
+    event.currentTarget.remove()
+})
 .draggable({
     inertia: false,
     autoScroll: false,
