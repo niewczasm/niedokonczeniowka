@@ -212,6 +212,7 @@ interact('.draggable')
     elements.appendChild(clone);
 })
 .on('tap', function(event){
+    if(event.double){ return; }
     event.currentTarget.remove()
 })
 .draggable({
