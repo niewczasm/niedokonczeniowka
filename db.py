@@ -8,7 +8,7 @@ import logging
 
 load_dotenv()
 
-logging.basicConfig(filename='logs.log', level=logging.DEBUG)
+logging.basicConfig(filename='logs.log', level=logging.WARN)
 app = Flask(__name__,
             static_url_path='',
             static_folder="web/static",
