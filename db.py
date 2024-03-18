@@ -124,11 +124,13 @@ def hello_world():
     else:
         newObj = {}
         firstTime = True
-        while 'name' not in newObj or 'emoji' not in newObj or len(newObj['emoji']) > 1:
+        while 'name' not in newObj or 'emoji' not in newObj:
             if not firstTime:
                 app.logger.critical(newObj)        
             newObj = askChatGPT(first,second)
             firstTime = False
+        if len(newObj['emoji']):
+            newObj['emoji'] = newObj['emoji'][0]
         return lookForNewObj(newObj,[first,second])
     
 @app.route("/")
