@@ -14,6 +14,15 @@ window.onload = (event) => {
     let elements = JSON.parse(localStorage.getItem("niedodata"))
     document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"
     prepareSidebar(elements, true)
+    
+    if (elements.length == 4) {
+        const node = document.createElement("button")
+        node.classList.add("listel")
+        node.id = "hint"
+        node.innerText = "Kliknij na element lub przeciągnij i łącz w pary!"
+        document.getElementById("sidebar").appendChild(node)
+    }
+
     document.getElementById("searchfield").addEventListener("input", searchList)
 }
 
@@ -172,6 +181,7 @@ function generateNew(firstTarget, secondTarget){
                     isNew = !found
                 }
                 if (isNew){
+                    document.getElementById("hint").remove()
                     elements.push(JSON.stringify({name:json.name, emoji:json.emoji}))
                     localStorage.setItem("niedodata", JSON.stringify(elements))
                     const node = document.createElement("button")

@@ -93,6 +93,12 @@ body {
     font-weight: bold;
 }
 
+#hint {
+    pointer-events: none;
+    opacity: 80%;
+    margin-top:20px;
+}
+
 .listel {
     align-self: center;
     background-color: #fff;
