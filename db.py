@@ -124,7 +124,7 @@ def hello_world():
     else:
         newObj = {}
         firstTime = True
-        while 'name' not in newObj or 'emoji' not in newObj or len(newObj['emoji'] > 1:
+        while 'name' not in newObj or 'emoji' not in newObj or len(newObj['emoji']) > 1:
             if not firstTime:
                 app.logger.critical(newObj)        
             newObj = askChatGPT(first,second)
