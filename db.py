@@ -24,10 +24,10 @@ collection_name = dbname[os.getenv("MONGODB_CL_test")]
 def askChatGPT(first, second):
     client = OpenAI()
     completion = client.chat.completions.create(
-        # model="gpt-3.5-turbo",
+        #model="gpt-3.5-turbo",
         model="gpt-4-turbo-preview",
         temperature=1,
-        top_p=1,
+        top_p=0.1,
         messages=[
             {"role": "system", "content": "Jesteś w stanie przyjąć dwa hasła i na ich podstawie utworzyć nowe, powiązane z obydwoma. Może to być dowolny rzeczownik, znana osoba, postać fikcyjna, cokolwiek ma logiczny związek. Odpowiadasz zawsze nowym hasłem i dodajesz do tego tylko jedno emoji odpowiadające danemu wynikowi. Nie twórz słów o ile nie jest to konieczne i zwracaj wyniki po polsku, liczebniki zamieniaj na liczby. Jeżeli obydwa hasła są takie same postaraj się nie zwracać tej samej wartości."},
             {"role": "user", "content": f"{first} + {second}"}
