@@ -38,13 +38,15 @@ def askChatGPT(first, second):
                 "type": "object",
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "description": "nowe hasło wynikające z haseł podanych przez uzytkownika"
                     },
                     "emoji": {
-                        "type": "string"
+                        "type": "string",
+                        "description":"emoji reprezentujące hasło z pola name"
                     }
                 },
-                "required": ["entry","emoji"]
+                "required": ["name","emoji"]
             }
         }],
         function_call={"name":"createNewEntry"}

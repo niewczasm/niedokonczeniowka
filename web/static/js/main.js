@@ -190,7 +190,7 @@ function generateNew(firstTarget, secondTarget){
 
 let pendingClick;
 let clicked = 0;
-let time_dbclick = 500
+let time_dbclick = 150
 
 interact('.draggable')
 .dropzone({
