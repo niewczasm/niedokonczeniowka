@@ -188,6 +188,10 @@ function generateNew(firstTarget, secondTarget){
     }
 }
 
+let pendingClick;
+let clicked = 0;
+let time_dbclick = 500
+
 interact('.draggable')
 .dropzone({
     accept: [".draggable"],
@@ -211,8 +215,17 @@ interact('.draggable')
     clone.style.top = `${y}px`;
     elements.appendChild(clone);
 })
-.on('hold', function(event){
-    event.currentTarget.remove()
+.on('tap', function(event){
+    clicked++
+    clearTimeout(pendingClick)
+    if(clicked < 2){
+        pendingClick = setTimeout(() => {
+            event.currentTarget.remove()
+            clicked = 0
+        }, time_dbclick)
+    } else {
+        clicked = 0;
+    }
 })
 .draggable({
     inertia: false,
