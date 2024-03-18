@@ -226,6 +226,9 @@ interact('.draggable')
         })
     ]
 })
+.pointerEvents({
+    holdDuration: 50
+});
 
 function randXY(max = 10, min = 0){
     let obj = {};
