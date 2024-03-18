@@ -98,31 +98,46 @@ interact('body')
     target.setAttribute('data-y', y)
 })
 .on('up', function(event){
-    var target = document.getElementById("empty")
-    var elements = document.getElementById("elements")
-    const mainContent = document.getElementById('main-content');
-    const mainContentDims = mainContent.getClientRects()
-    if (target.childNodes.length != 0){
-        var child = target.childNodes[0]
-        var el = document.elementsFromPoint(event.clientX, event.clientY)
-        if (event.clientX <= mainContentDims.item(0).left){
-            child.remove()
-        }
-        else{
-            const size = child.getBoundingClientRect()
-            const x = parseFloat(target.dataset.x) - size.width/2
-            const y = parseFloat(target.dataset.y) - size.height/2
-            child.setAttribute('data-x', x)
-            child.setAttribute('data-y', y)
-            child.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
-            child.style.whiteSpace = ""
-            elements.appendChild(child)
-            elements.appendChild(document.getElementById("empty"))
-            if(el[0].nodeName == "BUTTON" && el[1].nodeName == "BUTTON"){
-                generateNew(child,el[1])
+    let end = performance.now()
+    const elements = document.getElementById("elements")
+    if (end - start > 150){
+        var target = document.getElementById("empty")
+        const mainContent = document.getElementById('main-content');
+        const mainContentDims = mainContent.getClientRects()
+        if (target.childNodes.length != 0){
+            var child = target.childNodes[0]
+            var el = document.elementsFromPoint(event.clientX, event.clientY)
+            if (event.clientX <= mainContentDims.item(0).left){
+                child.remove()
+            }
+            else{
+                const size = child.getBoundingClientRect()
+                const x = parseFloat(target.dataset.x) - size.width/2
+                const y = parseFloat(target.dataset.y) - size.height/2
+                child.setAttribute('data-x', x)
+                child.setAttribute('data-y', y)
+                child.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+                child.style.whiteSpace = ""
+                elements.appendChild(child)
+                if(el[0].nodeName == "BUTTON" && el[1].nodeName == "BUTTON"){
+                    generateNew(child,el[1])
+                }
             }
         }
     }
+    else {
+        const clone = newel.cloneNode(true);
+        const mainContent = document.getElementById('main-content');
+        const mainContentDims = mainContent.getClientRects()
+        // clone.classList.remove('listel');
+        clone.classList.add('draggable');
+        clone.style.position = 'absolute';
+        clone.style.left = `${event.clientX + mainContentDims.item(0).left}px`;
+        clone.style.top = `${event.clientY}px`;
+        elements.appendChild(clone);
+        newel.remove()
+    }
+    elements.appendChild(document.getElementById("empty"))
 })
 
 function generateNew(firstTarget, secondTarget){
@@ -239,28 +254,30 @@ function dragMoveListener (event) {
     target.setAttribute('data-y', y)
 }
 
-
+let start
+let newel
 interact('#sidebar>.listel')
-.on('tap', function(event) {
-    const clone = event.currentTarget.cloneNode(true);
-    const mainContent = document.getElementById('main-content');
-    const mainContentDims = mainContent.getClientRects()
-    const elements = document.getElementById('elements');
-    // clone.classList.remove('listel');
-    clone.classList.add('draggable');
-    clone.style.position = 'absolute';
-    clone.style.left = `${event.clientX + mainContentDims.item(0).left}px`;
-    clone.style.top = `${event.clientY}px`;
-    elements.appendChild(clone);
-})
-.on('hold', function(event){
+// .on('tap', function(event) {
+//     const clone = event.currentTarget.cloneNode(true);
+//     const mainContent = document.getElementById('main-content');
+//     const mainContentDims = mainContent.getClientRects()
+//     const elements = document.getElementById('elements');
+//     // clone.classList.remove('listel');
+//     clone.classList.add('draggable');
+//     clone.style.position = 'absolute';
+//     clone.style.left = `${event.clientX + mainContentDims.item(0).left}px`;
+//     clone.style.top = `${event.clientY}px`;
+//     elements.appendChild(clone);
+// })
+.on('down', function(event){
+    start = performance.now()
     const clone = event.currentTarget.cloneNode(true);
     const empty = document.getElementById("empty")
     // clone.classList.remove('listel');
     clone.classList.add('draggable');
 
     clone.style.whiteSpace = "pre"
-
+    newel = clone
     empty.appendChild(clone)
 
     // var target = document.getElementById("empty")
