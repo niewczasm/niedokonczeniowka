@@ -129,7 +129,7 @@ def hello_world():
                 app.logger.critical(newObj)        
             newObj = askChatGPT(first,second)
             firstTime = False
-        if len(newObj['emoji']):
+        if len(newObj['emoji'])>1:
             newObj['emoji'] = newObj['emoji'][0]
         return lookForNewObj(newObj,[first,second])
     
