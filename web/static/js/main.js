@@ -74,9 +74,6 @@ function searchList(val) {
     
     let elements = JSON.parse(localStorage.getItem("niedodata"))
     let searchVal = val.target.value
-    console.log("input: " + searchVal + " ")
-    let isempty = val.target.value == ""
-    console.log("isempty " + isempty)
     if(val.target.value == ""){
         prepareSidebar(elements, true)
     }
@@ -95,7 +92,6 @@ function searchList(val) {
 
 function prepareSidebar(arr, parseArr=false){
     let btns = document.getElementById("sidebar").getElementsByTagName("button")
-    console.log(btns.length)
     if(btns.length > 0){
         for (let i = btns.length-1; i >= 0; i--){
             btns[i].remove()
@@ -184,7 +180,7 @@ interact('body')
             }
         }
     }
-    else {
+    else if (newel) {
         const clone = newel.cloneNode(true);
         const mainContent = document.getElementById('main-content');
         const mainContentDims = mainContent.getClientRects()
