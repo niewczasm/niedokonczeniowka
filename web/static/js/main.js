@@ -1,3 +1,5 @@
+const version = "0.1.x.d"
+
 window.onload = (event) => {
     if(localStorage.getItem("niedodata") == null) {
         let startingEls = [
@@ -12,21 +14,61 @@ window.onload = (event) => {
         localStorage.setItem("niedodata", JSON.stringify(startingEls))
     }
     let elements = JSON.parse(localStorage.getItem("niedodata"))
-    document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"
+    document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (masz " + elements.length + " z ♾️ dostępnych)"
     prepareSidebar(elements, true)
     
     if (elements.length == 4) {
         const node = document.createElement("button")
-        node.classList.add("listel")
+        node.classList.add("listel", "paperbtn")
         node.id = "hint"
         node.innerText = "Kliknij na element lub przeciągnij i łącz w pary!"
         document.getElementById("sidebar").appendChild(node)
     }
 
     document.getElementById("searchfield").addEventListener("input", searchList)
+    document.getElementById("clearBtn").onclick = function(){
+        let els = document.getElementById("elements").getElementsByTagName("button")
+        for(let i=els.length-1; i>=0; i--){
+            els[i].remove();
+        }
+    }
+    document.getElementById("pVersion").innerText = "Wersja: " + version;
+    document.getElementById("aboutBtn").innerText = "💡" + version;
+    document.getElementById("closeBtn").onclick = function (){closeBox("aboutBox")}
+    document.getElementById("aboutBtn").onclick = function(){openBox("aboutBox")}
+    document.getElementById("resetBtn").onclick = function(){openBox("resetBox")}
+    document.getElementById("noBtn").onclick = function(){closeBox("resetBox")}
+    document.getElementById("yesBtn").onclick = function(){resetGame()}
 }
 
+function resetGame() {
+    localStorage.removeItem("niedodata")
+    location.reload()
+}
 
+function closeBox(id) {
+    let box = document.getElementById(id)
+    let overlay = document.getElementById("overlay")
+
+    box.classList.add('notransition')
+    for(let i=box.getElementsByTagName("button").length-1; i>=0;i--){
+        let el = box.getElementsByTagName("button")[i]
+        el.classList.add('notransition')
+    }
+    box.style.visibility="hidden"
+    overlay.style.visibility="hidden"
+    box.offsetHeight
+    box.classList.remove('notransition')
+    for(let i=box.getElementsByTagName("button").length-1; i>=0;i--){
+        let el = box.getElementsByTagName("button")[i]
+        el.classList.remove('notransition')
+    }
+}
+
+function openBox(id) {
+    document.getElementById("overlay").style.visibility="visible"
+    document.getElementById(id).style.visibility="visible"
+}
 
 function searchList(val) {
     
@@ -68,7 +110,7 @@ function prepareSidebar(arr, parseArr=false){
             item = arr[i]
         }
         const node = document.createElement("button")
-        node.classList.add("listel")
+        node.classList.add("listel", "paperbtn")
         node.innerText = item.emoji + " " + item.name
         document.getElementById("sidebar").appendChild(node)
     }
@@ -86,6 +128,14 @@ function compareFn(a,b) {
 interact('#sidebar').dropzone({
     accept: '.draggable',
     overlap: 0.5,
+    ondrop: function (event) {
+        event.relatedTarget.remove()
+    }
+})
+
+interact('#menu').dropzone({
+    accept: '.draggable',
+    overlap: 0.2,
     ondrop: function (event) {
         event.relatedTarget.remove()
     }
@@ -109,7 +159,7 @@ interact('body')
 .on('up', function(event){
     let end = performance.now()
     const elements = document.getElementById("elements")
-    if (end - start > 150){
+    if(end - start > 150){
         var target = document.getElementById("empty")
         const mainContent = document.getElementById('main-content');
         const mainContentDims = mainContent.getClientRects()
@@ -128,7 +178,7 @@ interact('body')
                 child.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
                 child.style.whiteSpace = ""
                 elements.appendChild(child)
-                if(el[0].nodeName == "BUTTON" && el[1].nodeName == "BUTTON"){
+                if(el[0].nodeName == "BUTTON" && !el[1].classList.contains("menubtn") && el[1].nodeName == "BUTTON"){
                     generateNew(child,el[1])
                 }
             }
@@ -181,11 +231,14 @@ function generateNew(firstTarget, secondTarget){
                     isNew = !found
                 }
                 if (isNew){
-                    document.getElementById("hint").remove()
+                    let el = document.getElementById("hint");
+                    if(el){
+                        document.getElementById("hint").remove()
+                    }
                     elements.push(JSON.stringify({name:json.name, emoji:json.emoji}))
                     localStorage.setItem("niedodata", JSON.stringify(elements))
                     const node = document.createElement("button")
-                    node.classList.add("listel")
+                    node.classList.add("listel", "paperbtn")
                     node.innerText = json.emoji + " " + json.name
                     document.getElementById("sidebar").appendChild(node)
                     document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"

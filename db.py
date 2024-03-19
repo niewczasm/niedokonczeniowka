@@ -1,5 +1,5 @@
 from openai import OpenAI
-from flask import Flask, request, current_app
+from flask import Flask, request, current_app, abort
 import json
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -15,21 +15,20 @@ app = Flask(__name__,
             )
 
 def  get_db():
-    client = MongoClient(os.getenv("MONGODB_CS_test"))
-    return client[os.getenv("MONGODB_DB_test")]
+    client = MongoClient(os.getenv("MONGODB_CS"))
+    return client[os.getenv("MONGODB_DB")]
 
 dbname = get_db()
-collection_name = dbname[os.getenv("MONGODB_CL_test")]
+collection_name = dbname[os.getenv("MONGODB_CL")]
 
 def askChatGPT(first, second):
     client = OpenAI()
     completion = client.chat.completions.create(
-        #model="gpt-3.5-turbo",
         model="gpt-4-turbo-preview",
         temperature=1,
         top_p=0.1,
         messages=[
-            {"role": "system", "content": "Przyjmujesz dwa hasła i na ich podstawie tworzysz nowe, powiązane hasło. Może to być rzeczownik, znana osoba, postać fikcyjna, cokolwiek ma logiczny związek. Odpowiadasz nowym hasłem i dodajesz do tego tylko jedno emoji odpowiadające danemu wynikowi. Nie twórz słów o ile nie jest to konieczne i zwracaj wyniki po polsku, liczebniki zamieniaj na liczby. Jeżeli obydwa hasła są takie same nie zwracaj tej samej wartości."},
+            {"role": "system", "content": "Przyjmujesz dwa hasła i na ich podstawie tworzysz nowe, powiązane hasło. Może to być rzeczownik, osoba, postać fikcyjna, cokolwiek co ma logiczny związek. Nie twórz słów o ile nie jest to konieczne i zwracaj wyniki po polsku, liczebniki zamieniaj na liczby."},
             {"role": "user", "content": f"{first} + {second}"}
         ],
         functions= [{
@@ -43,7 +42,7 @@ def askChatGPT(first, second):
                     },
                     "emoji": {
                         "type": "string",
-                        "description":"emoji reprezentujące hasło z pola name"
+                        "description":"pojedyncze emoji reprezentujące hasło z pola name"
                     }
                 },
                 "required": ["name","emoji"]
@@ -128,13 +127,11 @@ def hello_world():
         firstTime = True
         while 'name' not in newObj or 'emoji' not in newObj:
             if not firstTime:
-                app.logger.critical(newObj)        
+                app.logger.critical(f"Error while generating new entry:  {first} {second} {newObj}, retrying")        
             newObj = askChatGPT(first,second)
             firstTime = False
-        if len(newObj['emoji'])>1:
-            newObj['emoji'] = newObj['emoji'][0]
         return lookForNewObj(newObj,[first,second])
     
 @app.route("/")
 def serveMain():
-    return current_app.send_static_file('index.html')
+    return current_app.send_static_file('index.html')    

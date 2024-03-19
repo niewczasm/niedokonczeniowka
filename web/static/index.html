@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Niedokończeniówka</title>
-<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
-<script src="js/main.js"></script>
-<link rel="stylesheet" href="css/style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Niedokończeniówka</title>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="js/main.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <meta property="og:title" content="Niedokończeniówka">
+    <meta property="og:type" content="website" />
+    <meta property="og:description" content="Łącz obiekty by tworzyć nowe. W nieskończoność.">
+    <meta property="og:image" content="https://mniewczas.pl/cards/niedokonczeniowka.png">
+    <meta property="og:url" content="http://mniewczas.pl/niedokonczeniowka/">
+    <meta name="twitter:card" content="summary_large_image">
 </head>
 <body>
     
@@ -20,9 +25,39 @@
         </div>
     </div>
 
+    
+
     <div id="main-content" class="droppable">
+        <div id="menu">
+            <button id="resetBtn" class="paperbtn menubtn">🔄RESET</button>
+            <button id="clearBtn" class="paperbtn menubtn">🧽Wyczyść tablicę</button>
+            <button id="aboutBtn" class="paperbtn menubtn"></button>
+        </div>
     </div>
 
     <div id="elements"><div id="empty"></div></div>
+    
+    <div id="overlay"></div>
+    <div id="resetBox" class="dialogBox paperbtn">
+        <h1>UWAGA</h1>
+        <p>RESET usunie wszystkie odnalezione obiekty.</p>
+        <p>Czy chcesz kontynuować?</p>
+        <div id="btns">
+            <button id="yesBtn" class="paperbtn hoverBtn">👍Tak, resetuj!</button>
+            <button id="noBtn" class="paperbtn hoverBtn">👎Nie!</button>
+        </div>
+    </div>
+
+    <div id="aboutBox" class="dialogBox paperbtn">
+        <button id="closeBtn" class="paperbtn closeBtn">X</button>
+        <h3>Niedokończeniówka</h3>
+        <p id="pVersion">Wersja: </p> 
+        <p>Skargi/uwagi/pytania/zażalenia/sugestie:</p>
+        <div id="socials">
+            <a href="https://github.com/niewczasm/niedokonczeniowka" target="_blank"><img src="img/github-mark.svg"></a>
+            <a href="https://wykop.pl/ludzie/stynsynrj" target="_blank"><img src="img/wykop_black.svg"></a>
+            <a href="https://twitter.com/Niewczas__" target="_blank"><img src="img/x.svg"></a>
+        </div>
+    </div>
 </body>
 </html>
