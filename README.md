@@ -65,6 +65,8 @@ Jeżeli widzisz że możesz cokolwiek poprawić lub zrobić lepiej to na co jesz
 
 Jeżeli widzisz że coś nie działa tak jak powinno to utwórz issue w repozytorium.
 
+Jeżeli wszystko Ci sie podoba i nie chcesz mnie puścić z torbami (requesty do OpenAI swoje kosztują) możesz mnie wspomóc klikając przycisk "Sponsor" na górze strony
+
 
 ## Tech Stack
 
