@@ -20,7 +20,7 @@ Dostępna [tutaj](https://mniewczas.pl/niedokonczeniowka/)
 
 ## Zmienne Środowiskowe
 
-Do uruchomienia projektu w pliu .env muszą znaleźć się następujące wpisy (template dostępny w .env.template)
+Do uruchomienia projektu w pliu .env muszą znaleźć się następujące wpisy (template dostępny w .[env.template](https://github.com/niewczasm/niedokonczeniowka/blob/main/.env.template))
 
 `OPENAI_API_KEY` - klucz API do OpenAI do wygenerowania [tutaj](https://platform.openai.com/api-keys)
 
