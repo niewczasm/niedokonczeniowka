@@ -28,7 +28,7 @@ def askChatGPT(first, second):
         temperature=1,
         top_p=0.1,
         messages=[
-            {"role": "system", "content": "Przyjmujesz dwa hasła i na ich podstawie tworzysz nowe, powiązane hasło. Może to być rzeczownik, osoba, postać fikcyjna, cokolwiek co ma logiczny związek. Nie twórz słów o ile nie jest to konieczne i zwracaj wyniki po polsku, liczebniki zamieniaj na liczby."},
+            {"role": "system", "content": "Przyjmujesz dwa hasła i na ich podstawie tworzysz nowe, powiązane hasło. Może to być rzeczownik, osoba, postać fikcyjna, cokolwiek co ma logiczny związek. Nie twórz słów o ile nie jest to konieczne i zwracaj wyniki po polsku, liczebniki i liczby zapisane słownie zamieniaj na liczby. Każdy wyraz pisz z wielkiej litery, o ile nie jest to nazwa własna"},
             {"role": "user", "content": f"{first} + {second}"}
         ],
         functions= [{
