@@ -57,7 +57,6 @@ def askChatGPT(first, second):
 def lookForEntry(first, second):
     entry = collection_name.find_one({ "$or": [{ "combinations": {"$in": [[first,second]]} }, { "combinations": {"$in": [[second,first]]}}]})
     if entry is not None:
-        print(entry)
         jsonobj = entry
         result = {
             "name": jsonobj['name'],
