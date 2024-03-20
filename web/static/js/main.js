@@ -83,7 +83,6 @@ function openBox(id) {
 }
 
 function changeArray(val) {
-    console.log(val)
     if (val.target.checked) {
         prepareSidebar(onlyNew)
     }
@@ -172,6 +171,14 @@ interact('body')
     // update the posiion attributes
     target.setAttribute('data-x', x)
     target.setAttribute('data-y', y)
+
+    var child = target.childNodes[0]
+    var el = document.elementsFromPoint(event.clientX, event.clientY)
+    if(child && el[0].nodeName == "BUTTON" && !el[1].classList.contains("menubtn") && el[1].nodeName == "BUTTON"){
+        child.style.fontSize = "1.3rem"
+    } else if (child){
+        child.style.fontSize = "1rem"
+    }
 })
 .on('up', function(event){
     let end = performance.now()
@@ -279,12 +286,20 @@ let time_dbclick = 150
 
 interact('.draggable')
 .dropzone({
-    accept: [".draggable"],
+    accept: [".draggable", "#empty"],
     overlap: 0.2,
     ondrop: function(event) {
         generateNew(event.currentTarget, event.relatedTarget)
     }
 
+})
+.on('dragenter', function(event){
+    let target = event.relatedTarget
+    target.style.fontSize = "1.3rem"
+})
+.on('dragleave', function (event){
+    let target = event.relatedTarget
+    target.style.fontSize = "1rem"
 })
 .on('doubletap', function(event){
     const clone = event.currentTarget.cloneNode(true);
@@ -316,7 +331,6 @@ interact('.draggable')
     inertia: false,
     autoScroll: false,
     listeners: {
-        start: startMove,
         move: dragMoveListener
     },
     modifiers: [
@@ -328,10 +342,6 @@ interact('.draggable')
 .pointerEvents({
     holdDuration: 50
 });
-
-function startMove(event){
-    console.log(event)
-}
 
 function randXY(max = 10, min = 0){
     let obj = {};
@@ -366,18 +376,6 @@ function dragMoveListener (event) {
 let start
 let newel
 interact('#sidebar>.listel')
-// .on('tap', function(event) {
-//     const clone = event.currentTarget.cloneNode(true);
-//     const mainContent = document.getElementById('main-content');
-//     const mainContentDims = mainContent.getClientRects()
-//     const elements = document.getElementById('elements');
-//     // clone.classList.remove('listel');
-//     clone.classList.add('draggable');
-//     clone.style.position = 'absolute';
-//     clone.style.left = `${event.clientX + mainContentDims.item(0).left}px`;
-//     clone.style.top = `${event.clientY}px`;
-//     elements.appendChild(clone);
-// })
 .on('down', function(event){
     start = performance.now()
     const clone = event.currentTarget.cloneNode(true);
