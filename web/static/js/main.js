@@ -1,5 +1,6 @@
 const version = "0.1.x.d"
-
+let onlyNew = []
+let all = []
 window.onload = (event) => {
     if(localStorage.getItem("niedodata") == null) {
         let startingEls = [
@@ -15,8 +16,8 @@ window.onload = (event) => {
     }
     let elements = JSON.parse(localStorage.getItem("niedodata"))
     document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (masz " + elements.length + " z ♾️ dostępnych)"
-    prepareSidebar(elements, true)
-    
+    parseData(elements)
+    prepareSidebar(all)
     if (elements.length == 4) {
         const node = document.createElement("button")
         node.classList.add("listel", "paperbtn")
@@ -26,6 +27,7 @@ window.onload = (event) => {
     }
 
     document.getElementById("searchfield").addEventListener("input", searchList)
+    document.getElementById("onlyNew").addEventListener("change", changeArray)
     document.getElementById("clearBtn").onclick = function(){
         let els = document.getElementById("elements").getElementsByTagName("button")
         for(let i=els.length-1; i>=0; i--){
@@ -39,6 +41,16 @@ window.onload = (event) => {
     document.getElementById("resetBtn").onclick = function(){openBox("resetBox")}
     document.getElementById("noBtn").onclick = function(){closeBox("resetBox")}
     document.getElementById("yesBtn").onclick = function(){resetGame()}
+}
+
+function parseData(elements) {
+    elements.forEach(el => {
+        el = JSON.parse(el)
+        all.push(el)
+        if(el.discovered){
+            onlyNew.push(el)
+        }
+    })
 }
 
 function resetGame() {
@@ -70,19 +82,31 @@ function openBox(id) {
     document.getElementById(id).style.visibility="visible"
 }
 
+function changeArray(val) {
+    console.log(val)
+    if (val.target.checked) {
+        prepareSidebar(onlyNew)
+    }
+    else {
+        prepareSidebar(all)
+    }
+}
+
 function searchList(val) {
-    
-    let elements = JSON.parse(localStorage.getItem("niedodata"))
+    let onlyNewchckbx = document.getElementById("onlyNew")
+    let arr = all
     let searchVal = val.target.value
+    if(onlyNewchckbx.checked){
+        arr = onlyNew
+    }
     if(val.target.value == ""){
-        prepareSidebar(elements, true)
+        prepareSidebar(all)
     }
     else {
         let filteredArr = []
-        elements.forEach(el => {
-            item = JSON.parse(el)
-            if(item.name.toLowerCase().includes(searchVal.toLowerCase())){
-                filteredArr.push(item)
+        arr.forEach(el => {
+            if(el.name.toLowerCase().includes(searchVal.toLowerCase())){
+                filteredArr.push(el)
             }
         })
         filteredArr.sort(compareFn)
@@ -90,7 +114,7 @@ function searchList(val) {
     }
 }
 
-function prepareSidebar(arr, parseArr=false){
+function prepareSidebar(arr){
     let btns = document.getElementById("sidebar").getElementsByTagName("button")
     if(btns.length > 0){
         for (let i = btns.length-1; i >= 0; i--){
@@ -98,16 +122,13 @@ function prepareSidebar(arr, parseArr=false){
         }
     }
     for (let i = 0; i < arr.length; i++) {
-        let item = {}
-        if(parseArr){
-            item = JSON.parse(arr[i])
-        }
-        else {
-            item = arr[i]
-        }
+        let item = arr[i] 
         const node = document.createElement("button")
         node.classList.add("listel", "paperbtn")
         node.innerText = item.emoji + " " + item.name
+        if(item.discovered){
+            node.innerText += " ✨"
+        }
         document.getElementById("sidebar").appendChild(node)
     }
 }
@@ -156,7 +177,7 @@ interact('body')
     let end = performance.now()
     const elements = document.getElementById("elements")
     if(end - start > 150){
-        var target = document.getElementById("empty")
+        let target = document.getElementById("empty")
         const mainContent = document.getElementById('main-content');
         const mainContentDims = mainContent.getClientRects()
         if (target.childNodes.length != 0){
@@ -185,7 +206,6 @@ interact('body')
         const mainContent = document.getElementById('main-content');
         const mainContentDims = mainContent.getClientRects()
         // clone.classList.remove('listel');
-        clone.classList.add('draggable');
         clone.style.position = 'absolute';
         clone.style.left = `${event.clientX + mainContentDims.item(0).left}px`;
         clone.style.top = `${event.clientY}px`;
@@ -231,15 +251,21 @@ function generateNew(firstTarget, secondTarget){
                     if(el){
                         document.getElementById("hint").remove()
                     }
-                    elements.push(JSON.stringify({name:json.name, emoji:json.emoji}))
+                    elements.push(JSON.stringify({name:json.name, emoji:json.emoji, discovered:json.discovered}))
                     localStorage.setItem("niedodata", JSON.stringify(elements))
                     const node = document.createElement("button")
                     node.classList.add("listel", "paperbtn")
                     node.innerText = json.emoji + " " + json.name
+                    if (json.discovered) {
+                        node.innerText += " ✨"
+                    }
                     document.getElementById("sidebar").appendChild(node)
                     document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"
                 }
                 firstTarget.innerText = json.emoji + " " + json.name
+                if (json.discovered) {
+                    firstTarget.innerText += " ✨"
+                }
                 firstTarget.disabled = false
                 secondTarget.remove()
                 }
@@ -290,7 +316,8 @@ interact('.draggable')
     inertia: false,
     autoScroll: false,
     listeners: {
-        move: dragMoveListener,
+        start: startMove,
+        move: dragMoveListener
     },
     modifiers: [
         interact.modifiers.restrict({
@@ -301,6 +328,10 @@ interact('.draggable')
 .pointerEvents({
     holdDuration: 50
 });
+
+function startMove(event){
+    console.log(event)
+}
 
 function randXY(max = 10, min = 0){
     let obj = {};
@@ -353,7 +384,7 @@ interact('#sidebar>.listel')
     const empty = document.getElementById("empty")
     // clone.classList.remove('listel');
     clone.classList.add('draggable');
-
+    clone.offsetHeight
     clone.style.whiteSpace = "pre"
     newel = clone
     empty.appendChild(clone)

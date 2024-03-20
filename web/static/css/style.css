@@ -65,6 +65,10 @@ body {
     border-right: none;
 }
 
+#checkboxDiv {
+    margin-bottom: 5px;
+}
+
 #searchfield:focus {
     outline: none;
     border-bottom: 3px solid white;
@@ -211,7 +215,7 @@ h1 {
 }
 
 .draggable:hover, .menubtn:hover, .closeBtn:hover, .hoverBtn:hover {
-    box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px;
+    box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px !important;
     transform: translate3d(0, 2px, 0);
 }
 
