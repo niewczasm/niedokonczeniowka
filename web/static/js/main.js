@@ -1,4 +1,4 @@
-const version = "0.1.x.d"
+const version = "0.2.x.d"
 let onlyNew = []
 let all = []
 window.onload = (event) => {
