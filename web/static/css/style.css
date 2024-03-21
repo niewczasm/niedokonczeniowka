@@ -47,6 +47,11 @@ body {
     #nside {
         padding: 5px !important;
         padding-bottom: 1px !important;
+        width: 25vw !important;
+    }
+
+    #sidebar {
+        padding-right: 10px !important;
     }
 }
 
