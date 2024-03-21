@@ -236,15 +236,20 @@ interact('body')
     elements.appendChild(document.getElementById("empty"))
 })
 
+function removeEmojis (str) {
+    return str.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g,'')
+    .replace(/\s+/g, ' ').trim();
+}
+
 function generateNew(firstTarget, secondTarget){
     if (secondTarget.disabled == false && firstTarget.disabled == false){
         firstTarget.disabled = true;
         secondTarget.disabled = true;
 
         const first = firstTarget.textContent
-        const firstnoemoji = first.substr(first.indexOf(" ") + 1)
+        const firstnoemoji = removeEmojis(first)
         const second = secondTarget.textContent
-        const secondnoemoji = second.substr(second.indexOf(" ") + 1)
+        const secondnoemoji = removeEmojis(second)
         fetch("generate?" + new URLSearchParams({
             first: firstnoemoji,
             second: secondnoemoji
@@ -252,6 +257,7 @@ function generateNew(firstTarget, secondTarget){
             .then((response) => response.json())
             .then((json) => {
                 let isNew = false
+                let wasAlreadyFound = false;
                 let elements = JSON.parse(localStorage.getItem("niedodata"))
                 if (json.discovered == true) {
                     isNew = true
@@ -261,11 +267,11 @@ function generateNew(firstTarget, secondTarget){
                     for (let i = 0; i < elements.length; i++) {
                         item = JSON.parse(elements[i])
                         if(json.name == item.name){
-                            found = true
+                            found = item.discovered
                             break
                         }
                     }
-                    isNew = !found
+                    wasAlreadyFound = found
                 }
                 if (isNew){
                     let el = document.getElementById("hint");
@@ -289,7 +295,7 @@ function generateNew(firstTarget, secondTarget){
                 }
                 firstTarget.style.fontSize = "1rem"
                 firstTarget.innerText = json.emoji + " " + json.name
-                if (json.discovered) {
+                if (json.discovered || wasAlreadyFound) {
                     firstTarget.innerText += " ✨"
                 }
                 firstTarget.disabled = false
