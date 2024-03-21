@@ -269,6 +269,7 @@ function generateNew(firstTarget, secondTarget){
                     document.getElementById("sidebar").appendChild(node)
                     document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"
                 }
+                firstTarget.style.fontSize = "1rem"
                 firstTarget.innerText = json.emoji + " " + json.name
                 if (json.discovered) {
                     firstTarget.innerText += " ✨"
