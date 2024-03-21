@@ -1,0 +1,15 @@
+{
+    "short_name": "Niedokończeniówka",
+    "display": "fullscreen",
+    "orientation": "landscape",
+    "icons": [
+        {
+            "src": "/img/infinity.svg",
+            "type": "image/svg+xml",
+            "sizes": "800x800"
+        }
+    ],
+    "id": "/",
+    "start_url": "/",
+    "scope": "/"
+}

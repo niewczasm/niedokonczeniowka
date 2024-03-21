@@ -1,6 +1,7 @@
-const version = "0.2.x.d"
+const version = "0.2.x.d.m"
 let onlyNew = []
 let all = []
+const isMobile = checkIfMobile()
 window.onload = (event) => {
     if(localStorage.getItem("niedodata") == null) {
         let startingEls = [
@@ -15,7 +16,12 @@ window.onload = (event) => {
         localStorage.setItem("niedodata", JSON.stringify(startingEls))
     }
     let elements = JSON.parse(localStorage.getItem("niedodata"))
-    document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (masz " + elements.length + " z ♾️ dostępnych)"
+    if(isMobile){
+        document.getElementById("searchfield").placeholder = "🔍 Wyszukaj (" + elements.length + "/♾️)"
+
+    } else {
+        document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (masz " + elements.length + " z ♾️ dostępnych)"
+    }
     parseData(elements)
     prepareSidebar(all)
     if (elements.length == 4) {
@@ -51,6 +57,13 @@ function parseData(elements) {
             onlyNew.push(el)
         }
     })
+}
+
+function checkIfMobile() {
+    let isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    let minWidth = 600;
+    let isSmall = Math.min(window.innerHeight, window.innerWidth, screen.width, screen.height) < minWidth;
+    return isTouch && isSmall;
 }
 
 function resetGame() {
@@ -141,7 +154,7 @@ function compareFn(a,b) {
     return 0
 }
 
-interact('#sidebar').dropzone({
+interact('#nside').dropzone({
     accept: '.draggable',
     overlap: 0.5,
     ondrop: function (event) {
@@ -174,7 +187,7 @@ interact('body')
 
     var child = target.childNodes[0]
     var el = document.elementsFromPoint(event.clientX, event.clientY)
-    if(child && el[0].nodeName == "BUTTON" && !el[1].classList.contains("menubtn") && el[1].nodeName == "BUTTON"){
+    if(child && el[0].nodeName == "BUTTON" && el != null && !el[1].classList.contains("menubtn") && el[1].nodeName == "BUTTON" && el[1].parentNode.id != "sidebar"){
         child.style.fontSize = "1.3rem"
     } else if (child){
         child.style.fontSize = "1rem"
@@ -186,11 +199,11 @@ interact('body')
     if(end - start > 150){
         let target = document.getElementById("empty")
         const mainContent = document.getElementById('main-content');
-        const mainContentDims = mainContent.getClientRects()
         if (target.childNodes.length != 0){
             var child = target.childNodes[0]
             var el = document.elementsFromPoint(event.clientX, event.clientY)
-            if (event.clientX <= mainContentDims.item(0).left){
+            let toRemove = el[el.length-3] != mainContent;
+            if (toRemove){
                 child.remove()
             }
             else{
@@ -203,7 +216,7 @@ interact('body')
                 child.style.fontSize = "1rem"
                 child.style.whiteSpace = ""
                 elements.appendChild(child)
-                if(el[0].nodeName == "BUTTON" && !el[1].classList.contains("menubtn") && el[1].nodeName == "BUTTON"){
+                if(el[0].nodeName == "BUTTON" && !el[1].classList.contains("menubtn") && el[1].nodeName == "BUTTON" && el[1].parentNode.id != "sidebar"){
                     generateNew(child,el[1])
                 }
             }
@@ -268,7 +281,11 @@ function generateNew(firstTarget, secondTarget){
                         node.innerText += " ✨"
                     }
                     document.getElementById("sidebar").appendChild(node)
-                    document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (" + elements.length + " dostępne)"
+                    if (isMobile){
+                        document.getElementById("searchfield").placeholder = "🔍 Wyszukaj (" + elements.length + "/♾️)"
+                    } else {
+                        document.getElementById("searchfield").placeholder = "🔍 Wyszukaj obiekt (masz " + elements.length + " z ♾️ dostępnych)"
+                    }
                 }
                 firstTarget.style.fontSize = "1rem"
                 firstTarget.innerText = json.emoji + " " + json.name

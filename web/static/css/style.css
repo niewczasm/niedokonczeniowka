@@ -12,6 +12,44 @@ body {
     user-select: none;
 }
 
+@media only screen and (orientation:portrait) and (max-width:600px){
+    body {
+        height: 100vw;
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+
+@media only screen and (orientation:landscape) and (max-height:600px){
+    .paperbtn {
+        padding: .1rem !important;
+    }
+
+    .dialogBox {
+        padding: 5px !important;
+    }
+
+    h2 {
+        font-size: 1rem !important;
+        margin-top: 3px !important;
+        margin-bottom: 3px !important;
+    }
+
+    #searchfield {
+        margin-top: 5px !important;
+        margin-bottom: 5px !important;
+        height: 5vh !important;
+    }
+
+    #nside {
+        padding: 5px !important;
+        padding-bottom: 1px !important;
+    }
+}
+
 #nside{
     width: 20vw;
     background-color: #f0f0f0;
@@ -28,7 +66,6 @@ body {
 
 #main-content {
     flex: 1;
-    padding: 0px;
     position: relative;
 }
 
@@ -146,7 +183,7 @@ body {
     border-top-right-radius: 15px 225px;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation;
+    touch-action: none;
 }
 
 .notransition {
@@ -161,7 +198,7 @@ body {
     min-height: 15vh;
     left: 40vw;
     top: 5vh;
-    width:20vw;
+    min-width:20vw;
     padding: 15px;
     cursor: default;
     visibility: hidden;
@@ -217,10 +254,6 @@ h1 {
 .draggable:hover, .menubtn:hover, .closeBtn:hover, .hoverBtn:hover {
     box-shadow: rgba(0, 0, 0, .2) 15px 28px 25px -18px !important;
     transform: translate3d(0, 2px, 0);
-}
-
-.draggable:focus, .menubtn:focus {
-    box-shadow: rgba(0, 0, 0, .3) 2px 8px 4px -6px;
 }
 
 .draggable:disabled {
