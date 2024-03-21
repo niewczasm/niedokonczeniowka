@@ -104,15 +104,15 @@ function changeArray(val) {
     }
 }
 
-function searchList(val) {
+function searchList() {
     let onlyNewchckbx = document.getElementById("onlyNew")
     let arr = all
-    let searchVal = val.target.value
+    let searchVal = document.getElementById("searchfield").value
     if(onlyNewchckbx.checked){
         arr = onlyNew
     }
-    if(val.target.value == ""){
-        prepareSidebar(all)
+    if(searchVal == ""){
+        prepareSidebar(arr)
     }
     else {
         let filteredArr = []
@@ -278,8 +278,15 @@ function generateNew(firstTarget, secondTarget){
                     if(el){
                         document.getElementById("hint").remove()
                     }
-                    elements.push(JSON.stringify({name:json.name, emoji:json.emoji, discovered:json.discovered}))
+                    let newObj = {
+                        name:json.name, 
+                        moji:json.emoji, 
+                        discovered:json.discovered
+                    }
+                    elements.push(JSON.stringify(newObj))
                     localStorage.setItem("niedodata", JSON.stringify(elements))
+                    all.push(newObj)
+                    searchList()
                     const node = document.createElement("button")
                     node.classList.add("listel", "paperbtn")
                     node.innerText = json.emoji + " " + json.name
