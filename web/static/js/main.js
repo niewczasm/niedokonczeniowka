@@ -256,44 +256,44 @@ function generateNew(firstTarget, secondTarget){
         }), {method: "GET"})
             .then((response) => response.json())
             .then((json) => {
-                let isNew = false
+                let isNew = json.discovered
                 let wasAlreadyFound = false;
                 let elements = JSON.parse(localStorage.getItem("niedodata"))
-                if (json.discovered == true) {
-                    isNew = true
-                }
-                else {
+                let wasDiscoveredByUser = false
+                if(!isNew) {
                     let found = false
-                    for (let i = 0; i < elements.length; i++) {
-                        item = JSON.parse(elements[i])
+                    let wasDiscoveredByUser = false
+                    for (let i = 0; i < all.length; i++) {
+                        item = all[i]
                         if(json.name == item.name){
-                            found = item.discovered
+                            wasDiscoveredByUser = item.discovered
+                            wasAlreadyFound = true
                             break
                         }
                     }
-                    wasAlreadyFound = found
                 }
-                if (isNew){
+                if (isNew || !wasAlreadyFound){
                     let el = document.getElementById("hint");
                     if(el){
                         document.getElementById("hint").remove()
                     }
                     let newObj = {
                         name:json.name, 
-                        moji:json.emoji, 
+                        emoji:json.emoji, 
                         discovered:json.discovered
                     }
                     elements.push(JSON.stringify(newObj))
                     localStorage.setItem("niedodata", JSON.stringify(elements))
                     all.push(newObj)
-                    searchList()
                     const node = document.createElement("button")
                     node.classList.add("listel", "paperbtn")
                     node.innerText = json.emoji + " " + json.name
-                    if (json.discovered) {
+                    if (newObj.discovered) {
                         node.innerText += " ✨"
+                        onlyNew.push(newObj)
                     }
-                    document.getElementById("sidebar").appendChild(node)
+                    searchList()
+                    // document.getElementById("sidebar").appendChild(node)
                     if (isMobile){
                         document.getElementById("searchfield").placeholder = "🔍 Wyszukaj (" + elements.length + "/♾️)"
                     } else {
@@ -302,7 +302,7 @@ function generateNew(firstTarget, secondTarget){
                 }
                 firstTarget.style.fontSize = "1rem"
                 firstTarget.innerText = json.emoji + " " + json.name
-                if (json.discovered || wasAlreadyFound) {
+                if (json.discovered || wasDiscoveredByUser) {
                     firstTarget.innerText += " ✨"
                 }
                 firstTarget.disabled = false
