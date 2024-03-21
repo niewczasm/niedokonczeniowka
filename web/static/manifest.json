@@ -4,7 +4,7 @@
     "orientation": "landscape",
     "icons": [
         {
-            "src": "/img/infinity.svg",
+            "src": "/niedokonczeniowka/img/infinity.svg",
             "type": "image/svg+xml",
             "sizes": "800x800"
         }
