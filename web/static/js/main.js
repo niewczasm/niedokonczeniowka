@@ -61,7 +61,7 @@ function parseData(elements) {
 
 function checkIfMobile() {
     let isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    let minWidth = 600;
+    let minWidth = 768;
     let isSmall = Math.min(window.innerHeight, window.innerWidth, screen.width, screen.height) < minWidth;
     return isTouch && isSmall;
 }
