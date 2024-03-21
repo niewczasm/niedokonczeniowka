@@ -200,6 +200,7 @@ interact('body')
                 child.setAttribute('data-x', x)
                 child.setAttribute('data-y', y)
                 child.style.transform = 'translate(' + x + 'px, ' + y + 'px)'
+                child.style.fontSize = "1rem"
                 child.style.whiteSpace = ""
                 elements.appendChild(child)
                 if(el[0].nodeName == "BUTTON" && !el[1].classList.contains("menubtn") && el[1].nodeName == "BUTTON"){
